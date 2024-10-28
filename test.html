@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map with Crosshair and Line Coordinates</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+
+        .input-section {
+            margin-bottom: 10px;
+        }
+
+        #live-coordinates {
+            margin-top: 10px;
+        }
+
+        #crosshair-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background-color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: 1px solid black;
+        }
+
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: 999;
+            width: 20px;
+            height: 20px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/5/55/Crosshair.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Map with Crosshair and Line Coordinates</h1>
+
+    <div class="input-section">
+        <label for="lat">Start Latitude:</label>
+        <input type="number" id="lat" step="any" placeholder="Enter latitude">
+        <br>
+
+        <label for="lng">Start Longitude:</label>
+        <input type="number" id="lng" step="any" placeholder="Enter longitude">
+        <br>
+
+        <label for="direction">Direction:</label>
+        <select id="direction">
+            <option value="north">North</option>
+            <option value="south">South</option>
+            <option value="east">East</option>
+            <option value="west">West</option>
+        </select>
+        <br>
+
+        <label for="distance">Distance (feet):</label>
+        <input type="number" id="distance" placeholder="Enter distance in feet">
+        <br>
+
+        <button onclick="drawLine()">Draw Line</button>
+    </div>
+
+    <div id="map"></div>
+    <button id="crosshair-btn" onclick="getCenterCoordinates()">Get Center Coordinates</button>
+    <div id="live-coordinates">Coordinates: <span id="mouse-coordinates"></span></div>
+    <div id="center-coordinates">Center Coordinates: <span id="center-coord"></span></div>
+    <div id="end-coordinates">Line End Coordinates: <span id="end-coord"></span></div>
+
+    <div id="crosshair"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([51.505, -0.09], 13);
+
+        // Add OpenStreetMap tiles
+        googleHybrid = L.tileLayer('http://{s}.google.com/vt?lyrs=s,h&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        });
+        googleHybrid.addTo(map)
+
+        // Update live coordinates on mouse move
+        map.on('mousemove', function (e) {
+            document.getElementById('mouse-coordinates').textContent = e.latlng.lat.toFixed(5) + ", " + e.latlng.lng.toFixed(5);
+        });
+
+        // Get the center coordinates when crosshair button is clicked
+        function getCenterCoordinates() {
+            var center = map.getCenter();
+            document.getElementById('center-coord').textContent = center.lat.toFixed(5) + ", " + center.lng.toFixed(5);
+        }
+
+        // Function to draw the line based on input values and show end coordinates
+        function drawLine() {
+            // Get input values
+            var lat = parseFloat(document.getElementById("lat").value);
+            var lng = parseFloat(document.getElementById("lng").value);
+            var direction = document.getElementById("direction").value;
+            var distanceInFeet = parseFloat(document.getElementById("distance").value);
+
+            if (isNaN(lat) || isNaN(lng) || isNaN(distanceInFeet)) {
+                alert("Please provide valid inputs");
+                return;
+            }
+
+            // Convert feet to meters (1 foot = 0.3048 meters)
+            var distanceInMeters = distanceInFeet * 0.3048;
+
+            // Calculate the new coordinates based on direction
+            var newLat = lat;
+            var newLng = lng;
+
+            if (direction === "north") {
+                newLat += distanceInMeters / 111320;  // Latitude changes per meter
+            } else if (direction === "south") {
+                newLat -= distanceInMeters / 111320;
+            } else if (direction === "east") {
+                newLng += distanceInMeters / (111320 * Math.cos(lat * Math.PI / 180));  // Longitude changes based on latitude
+            } else if (direction === "west") {
+                newLng -= distanceInMeters / (111320 * Math.cos(lat * Math.PI / 180));
+            }
+
+            // Draw the line on the map
+            var latlngs = [
+                [lat, lng],
+                [newLat, newLng]
+            ];
+
+            L.polyline(latlngs, { color: 'red' }).addTo(map);
+            map.setView([lat, lng], 13);  // Center the map on the starting point
+
+            // Display the end coordinates
+            document.getElementById('end-coord').textContent = newLat.toFixed(5) + ", " + newLng.toFixed(5);
+        }
+    </script>
+
+</body>
+
+</html>
