@@ -247,7 +247,7 @@ map.on('move', function (e) {
 
 //                                                  Image Overlay
 
-var imageUrl = '../assets/tk-b.png'; // Replace with your image URL
+var imageUrl = './tk-b.png'; // Replace with your image URL
 var imageBounds = [[31.45295, 72.25096], [31.41692, 72.28641]]; // Adjust coordinates as needed
 L.imageOverlay(imageUrl, imageBounds).addTo(map);
 
