@@ -11,6 +11,9 @@ var map = L.map('map', {
     wheelPxPerZoomLevel: 50
 })
 googleHybrid = L.tileLayer('http://{s}.google.com/vt?lyrs=s,h&x={x}&y={y}&z={z}', {
+    tileSize: 512, // Higher tile size
+    zoomOffset: -1, // Compensate for the tile size
+    detectRetina: true, // Use HD tiles on retina displays
     maxZoom: 30,
     subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
 });
