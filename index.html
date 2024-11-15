@@ -1,97 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Made by 💙</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="./assets/app.css" />
+    <title>Leaflet Map Application</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            margin-top: -10px;
+            background: url('https://cdn-icons-png.flaticon.com/512/151/151892.png') no-repeat center;
+            background-size: contain;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        #coordinates {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1000;
+            font-size: 14px;
+        }
+        .leaflet-bar {
+            margin-top: 50px; /* Ensure no overlap with coordinates box */
+        }
+    </style>
 </head>
-
 <body>
     <div id="map"></div>
-    <div id="crosshair">⊹</div>
-        <button class="calc" id="calc"><span>🖩</span></button>
-        <div id="locate-button">📍</div>
-        <!-- Search Icon Button -->
-        <div id="search-icon">
-            🔍
-        </div>
+    <div id="crosshair"></div>
+    <div id="coordinates">Lat: 0, Lng: 0</div>
 
-    <!-- Single Search Input Box -->
-    <div id="search-coordinates" style="display: none;">
-        <label for="coord-input">Enter Coordinates:</label>
-        <input type="text" id="coord-input" placeholder="e.g., 31.42068, 72.31527">
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.umd.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Initialize the map
+            const map = L.map("map", {
+                center: [0, 0],
+                zoom: 2
+            });
 
-        <button type="button" onclick="searchCoordinates()">Search</button>
-    </div>
+            // Add a tile layer
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "© OpenStreetMap contributors"
+            }).addTo(map);
 
+            // Crosshair element
+            const crosshair = document.getElementById("crosshair");
+            const coordinatesBox = document.getElementById("coordinates");
 
-    <!--Popup-->
-    <div id="popup" style="display: none;">
-        <button class="close-btn" onclick="closePopup()">✖</button>
+            // Update coordinates in the box
+            map.on("move", () => {
+                const center = map.getCenter();
+                coordinatesBox.innerHTML = `Lat: ${center.lat.toFixed(6)}, Lng: ${center.lng.toFixed(6)}`;
+            });
 
-        <div id="triangle-inputs" style="display: flex; flex-wrap: wrap;">
-            <div class="form-group">
-                <label for="side1">Side 1 (in feet):</label>
-                <input type="number" id="side1" name="side1" placeholder="Enter side 1 length in feet" required>
-            </div>
-            <div class="form-group">
-                <label for="side2">Side 2 (in feet):</label>
-                <input type="number" id="side2" name="side2" placeholder="Enter side 2 length in feet" required>
-            </div>
-            <div class="form-group">
-                <label for="side3">Side 3 (in feet):</label>
-                <input type="number" id="side3" name="side3" placeholder="Enter side 3 length in feet">
-            </div>
-            <div class="form-group">
-                <label for="angle">Angle:</label>
-                <input type="number" id="angle" name="angle" placeholder="Enter the angle in degrees" required>
-            </div>
-        </div>
-        <div style="display: flex;  align-items: center;">
+            // Add live location button
+            L.control.locate({
+                position: "topleft",
+                strings: { title: "Show my location" }
+            }).addTo(map);
 
-            <div class="form-group">
-                <button type="button" onclick="calculateThirdSide()">Calculate Third Side</button>
-            </div>
-
-            <div class="form-group">
-                <button type="button" onclick="calculateTriangleArea()">Calculate Area of Triangle</button>
-            </div>
-
-        </div>
-        <h4>Or Add More Sides for Polygon (4+ Sides)</h4>
-
-        <div id="polygon-list" class="polygon-list">
-            <div class="form-group">
-                <label for="side4">Side 4 (in feet):</label>
-                <input type="number" id="side4" name="side4" placeholder="Enter side 4 length in feet">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <button type="button" onclick="addSide()">Add Another Side</button>
-        </div>
-
-        <div class="form-group">
-            <button type="button" onclick="calculatePolygonArea()">Calculate Area of Polygon</button>
-        </div>
-
-        <h3 id="result"></h3>
-    </div>
-    <div id="center-coordinates"><span id="center-coord"></span></div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <script src="./dk.js"></script>
-    <script src="./jk.js"></script>
-    <script src="./tk.js"></script>
-    <script src="./pw.js"></script>
-    <script src="./mainscript.js"></script>
+            // Add search control
+            const searchControl = new GeoSearch.GeoSearchControl({
+                provider: new GeoSearch.OpenStreetMapProvider(),
+                style: "bar",
+                showMarker: true,
+                autoClose: true
+            });
+            map.addControl(searchControl);
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.locatecontrol/0.76.0/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.locatecontrol/0.76.0/L.Control.Locate.min.css" />
 </body>
-
 </html>
