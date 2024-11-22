@@ -1753,7 +1753,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "7/1-7/5",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1770,7 +1770,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "7/5-1/15",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1787,7 +1787,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "7/5-3/24",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1804,7 +1804,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "7/5-7/25",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1821,7 +1821,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "7/25-7/23",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1838,7 +1838,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "6/5-6/25",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1855,7 +1855,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "6/5-2/16",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1872,7 +1872,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "6/25-6/21",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1889,7 +1889,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "5/21-5/25",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1906,7 +1906,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "5/25-5/16",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1923,7 +1923,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "5/25-4/21",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1939,7 +1939,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "5/25-10/25",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1955,7 +1955,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "10/25-10/24",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1971,7 +1971,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "6/25-9/15",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -1988,7 +1988,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "7/25-8/25",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -2005,7 +2005,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "8/25-8/22",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -2021,7 +2021,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "8/25-9/24",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -2037,7 +2037,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "8/25-15/5",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -2053,7 +2053,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "10/25-13/6",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [
@@ -2069,7 +2069,7 @@ var daduana = {
 		{
 			"type": "Feature",
 			"id": "10/25-12/2",
-			"color": "white",
+			"color": "yellow",
 			"geometry": {
 				"type": "polyline",
 				"coords": [

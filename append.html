@@ -36,6 +36,14 @@
             width: 100%;
             height: 150px;
         }
+
+        .number-label {
+            font-size: 12px;
+            color: rgb(255, 255, 255);
+            text-align: center;
+            border-radius: 50%;
+            padding: 2px;
+        }
     </style>
 </head>
 
@@ -73,6 +81,25 @@
     <div id="live-coordinates">Coordinates: <span id="mouse-coordinates"></span></div>
     <div id="center-coordinates">Center Coordinates: <span id="center-coord"></span></div>
     <div id="end-coordinates">Line End Coordinates: <span id="end-coord"></span></div>
+    <div class="input-section">
+        <label for="coords">Start Coordinates (lat, lng):</label>
+        <input type="text" id="coord" placeholder="Enter coordinates as lat,lng">
+        <br>
+
+        <label for="width">North and south length:</label>
+        <input type="number" id="width" placeholder="Enter width in feet">
+        <br>
+
+        <label for="height">East and west length</label>
+        <input type="number" id="height" placeholder="Enter height in feet">
+        <br>
+
+        <label for="murabba-number">Murabba Number:</label>
+        <input type="text" id="murabba-number" placeholder="Enter Murabba Number">
+        <button onclick="drawRectangle()">Draw Rectangle</button>
+    </div>
+
+
 
     <!-- Editable textarea to show and modify the JSON data -->
     <textarea id="json-data">JSON data will appear here...</textarea>
@@ -88,13 +115,207 @@
             subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
         });
         googleHybrid.addTo(map)
+        var lineData = [];
+        function drawRectangle() {
+            try {
+                // Get the starting coordinates from the input
+                const coordInput = document.getElementById('coord').value.trim();
+                const coordsArray = coordInput.split(',');
+
+                if (coordsArray.length !== 2) {
+                    alert('Please provide coordinates in "lat,lng" format');
+                    return;
+                }
+
+                const lat = parseFloat(coordsArray[0]);
+                const lng = parseFloat(coordsArray[1]);
+
+                if (isNaN(lat) || isNaN(lng)) {
+                    alert('Invalid coordinates.');
+                    return;
+                }
+
+                // Get the width and height from the inputs
+                const widthFeet = parseFloat(document.getElementById('width').value) || 0;
+                const heightFeet = parseFloat(document.getElementById('height').value) || 0;
+                const murabbaNumber = document.getElementById('murabba-number').value.trim();
+
+
+                if (widthFeet <= 0 || heightFeet <= 0) {
+                    alert('Width and height must be positive numbers.');
+                    return;
+                }
+
+                if (!murabbaNumber) {
+                    alert('Please enter a Murabba Number.');
+                    return;
+                }
+
+                // Convert feet to meters
+                const feetToMeters = 0.3048;
+                const widthMeters = widthFeet * feetToMeters;
+                const heightMeters = heightFeet * feetToMeters;
+
+                // Calculate the rectangle corners
+                const nw = [lat, lng]; // Northwest point (starting point)
+                const ne = [lat, lng + widthMeters / (111320 * Math.cos(lat * Math.PI / 180))]; // Northeast
+                const sw = [lat - heightMeters / 111320, lng]; // Southwest
+                const se = [lat - heightMeters / 111320, lng + widthMeters / (111320 * Math.cos(lat * Math.PI / 180))]; // Southeast
+
+                // Debug log the points
+                console.log('NW:', nw, 'NE:', ne, 'SE:', se, 'SW:', sw);
+
+                // Draw the rectangle on the map
+                const rectangleCoordinates = [nw, ne, se, sw, nw]; // Complete the polygon by connecting back to NW
+
+                const rectangle = L.polygon(rectangleCoordinates, {
+                    color: 'red',
+                    fillColor: 'transparent',
+                    weight: 2
+                }).addTo(map);
+
+                // Calculate the center point of the rectangle
+                const centerLat = (nw[0] + sw[0]) / 2;
+                const centerLng = (nw[1] + ne[1]) / 2;
+
+                // Add a marker with the Murabba Number at the center of the rectangle
+                L.marker([centerLat, centerLng], {
+                    icon: L.divIcon({
+                        className: 'murabba-label',
+                        html: `<div style="font-weight: bold; color: white; font-size: 14px;">${murabbaNumber}</div>`
+                    })
+                }).addTo(map);
+
+                // Create the GeoJSON representation
+                const geojsonData = {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[nw, ne, se, sw, nw]] // GeoJSON coordinates are nested
+                    },
+                    properties: {
+                        'murabba': murabbaNumber
+                    }
+                };
+                lineData.push(geojsonData)
+                // Add the GeoJSON to the textarea
+                document.getElementById('json-data').value = JSON.stringify(lineData, null, 2);
+            } catch (error) {
+                console.error('An error occurred:', error.message);
+            }
+        }
+
+        // // Fit map to rectangle bounds
+        // map.fitBounds(bounds);
+
+        // // Generate GeoJSON data for the rectangle
+        // const geojsonData = {
+        //     "type": "Feature",
+        //     "properties": {},
+        //     "geometry": {
+        //         "type": "Polygon",
+        //         "coordinates": [[
+        //             [startLng, startLat],
+        //             [eastLng, northLat],
+        //             [eastLng, southLat],
+        //             [westLng, southLat],
+        //             [startLng, startLat] // Close the polygon
+        //         ]]
+        //     }
+        // };
+        // document.getElementById('json-data').value = JSON.stringify(geojsonData, null, 2);
+
+
+
+
+
+
+
+
+        // var bounds = [
+        //     [31.4187222, 72.2825785],  // Southwest corner
+        //     [31.420, 72.284]           // Northeast corner
+        // ];
+
+
+        // // Draw the rectangle
+        // var rectangle = L.rectangle(bounds, { color: '#ff0000', weight: 2, fillColor: "transparent", fillOpacity: 0 }).addTo(map);
+        // let boxElements = [];
+
+        // // Add click event handler to the rectangle
+        // let boxesVisible = false;  // Track visibility state
+        // let boxes = [];  // Array to store box references
+        // let markers = []; // Array to store number markers
+
+        // // Add click event handler to the rectangle
+        // rectangle.on('click', function (e) {
+        //     if (!boxesVisible) {
+        //         // Create boxes if they don't exist
+        //         const bounds = rectangle.getBounds();
+        //         const north = bounds.getNorth();
+        //         const south = bounds.getSouth();
+        //         const east = bounds.getEast();
+        //         const west = bounds.getWest();
+
+        //         const latStep = (north - south) / 5;
+        //         const lngStep = (east - west) / 5;
+
+        //         // Create 25 boxes (5x5 grid)
+        //         for (let row = 0; row < 5; row++) {
+        //             for (let col = 0; col < 5; col++) {
+        //                 const boxNorth = north - (row * latStep);
+        //                 const boxSouth = boxNorth - latStep;
+        //                 let boxWest = west + (col * lngStep);
+        //                 let boxEast = boxWest + lngStep;
+
+        //                 // Calculate number based on row (even/odd)
+        //                 let number;
+        //                 if (row % 2 === 0) {
+        //                     number = row * 5 + col + 1;
+        //                 } else {
+        //                     number = (row * 5) + (5 - col);
+        //                 }
+
+        //                 // Create rectangle
+        //                 const boxBounds = [[boxSouth, boxWest], [boxNorth, boxEast]];
+        //                 const box = L.rectangle(boxBounds, {
+        //                     color: 'yellow',
+        //                     weight: 1,
+        //                     fillOpacity: 0
+        //                 }).addTo(map);
+        //                 boxes.push(box);
+
+        //                 box.on('click', () => {
+        //                     // Remove all boxes and markers
+        //                     boxes.forEach(box => map.removeLayer(box));
+        //                     markers.forEach(marker => map.removeLayer(marker));
+        //                     boxes = [];
+        //                     markers = [];
+        //                     boxesVisible = false;
+        //                 })
+
+        //                 // Add number label
+        //                 const center = box.getBounds().getCenter();
+        //                 const marker = L.marker(center, {
+        //                     icon: L.divIcon({
+        //                         className: 'number-label',
+        //                         html: number.toString(),
+        //                         iconSize: [20, 20]
+        //                     })
+        //                 }).addTo(map);
+        //                 markers.push(marker);
+        //             }
+        //         }
+        //         boxesVisible = true;
+        //     }
+        // });
 
         // Store references to layers
         var currentLineLayer = null;
         var lineLayers = [];  // Array to store multiple line layers
 
         // Initialize line data array to store drawn lines
-        var lineData = [];
+        
 
         // Update live coordinates on mouse move
         map.on('mousemove', function (e) {
